@@ -122,6 +122,15 @@ end)
 
 entity:SetCallback("OnDespawning", function()
 	print("Entity is despawning")
+	local achievementGiver = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Doors/Custom%20Achievements/Source.lua"))()
+	---====== Display achievement ======--- 
+	achievementGiver({ 
+		Title = "Red planets...",
+		Desc = "Too many glooms in your nightmares", 
+		Reason = "Encounter Nightmare Gloom" 
+        Image = "rbxassetid://131694618833985"
+	})
+
 	local TweenService = game:GetService("TweenService")
 
 	local tween = TweenService:Create(
