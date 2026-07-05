@@ -30,7 +30,7 @@ game.ReplicatedStorage.GameData.LatestRoom.Changed:Connect(function()
 				},
 				Earthquake = {Enabled = true},
 				CameraShake = {
-					Enabled = false,
+					Enabled = true,
 					Range = 100,
 					Values = {20, 30, 0.1, 0.1}
 				},
