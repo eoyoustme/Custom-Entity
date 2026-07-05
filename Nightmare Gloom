@@ -87,7 +87,7 @@ entity:SetCallback("OnSpawned", function()
 	camShake:ShakeOnce(20, 3, 1, 6, 9, 2)
 
 	task.wait(2)
-	
+
 	light(2,Color3.fromRGB(445, 15, 0),Color3.fromRGB(445, 0, 0))
 
 end)
@@ -127,8 +127,8 @@ entity:SetCallback("OnDespawning", function()
 	achievementGiver({ 
 		Title = "Red planets...",
 		Desc = "Too many glooms in your nightmares", 
-		Reason = "Encounter Nightmare Gloom" 
-        Image = "rbxassetid://131694618833985"
+		Reason = "Encounter Nightmare Gloom",
+		Image = "rbxassetid://131694618833985"
 	})
 
 	local TweenService = game:GetService("TweenService")
@@ -140,7 +140,7 @@ entity:SetCallback("OnDespawning", function()
 	)
 
 	tween:Play()
-	
+
 	local tween2 = TweenService:Create(
 		game.Workspace.NighmareGloom.RushNew.PlaySound2,
 		TweenInfo.new(2),
@@ -148,7 +148,7 @@ entity:SetCallback("OnDespawning", function()
 	)
 
 	tween2:Play()
-	
+
 	local tween3 = TweenService:Create(
 		game.Workspace.NighmareGloom.RushNew.PlaySound3,
 		TweenInfo.new(2),
@@ -156,7 +156,7 @@ entity:SetCallback("OnDespawning", function()
 	)
 
 	tween3:Play()
-	
+
 	local tween31 = TweenService:Create(
 		game.Workspace.NighmareGloom.RushNew.PlaySound,
 		TweenInfo.new(2),
