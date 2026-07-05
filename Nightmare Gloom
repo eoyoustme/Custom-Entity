@@ -131,39 +131,26 @@ entity:SetCallback("OnDespawning", function()
 		Image = "rbxassetid://131694618833985"
 	})
 
-	local TweenService = game:GetService("TweenService")
+local sounds = {
+	game.Workspace.NighmareGloom.RushNew.Sound,
+	game.Workspace.NighmareGloom.RushNew.PlaySound,
+	game.Workspace.NighmareGloom.RushNew.PlaySound2,
+	game.Workspace.NighmareGloom.RushNew.PlaySound3
+}
 
-	local tween = TweenService:Create(
-		game.Workspace.NighmareGloom.RushNew.Sound,
-		TweenInfo.new(2),
-		{PlaybackSpeed = 0}
-	)
+task.spawn(function()
+	for i = 1, 20 do
+		local speed = 1 - (i / 20)
 
-	tween:Play()
+		for _, sound in ipairs(sounds) do
+			if sound and sound:IsA("Sound") then
+				sound.PlaybackSpeed = math.max(speed, 0.01)
+			end
+		end
 
-	local tween2 = TweenService:Create(
-		game.Workspace.NighmareGloom.RushNew.PlaySound2,
-		TweenInfo.new(2),
-		{PlaybackSpeed = 0}
-	)
-
-	tween2:Play()
-
-	local tween3 = TweenService:Create(
-		game.Workspace.NighmareGloom.RushNew.PlaySound3,
-		TweenInfo.new(2),
-		{PlaybackSpeed = 0}
-	)
-
-	tween3:Play()
-
-	local tween31 = TweenService:Create(
-		game.Workspace.NighmareGloom.RushNew.PlaySound,
-		TweenInfo.new(2),
-		{PlaybackSpeed = 0}
-	)
-
-	tween31:Play()
+		task.wait(0.1)
+	end
+end)
 end)
 
 entity:SetCallback("OnDespawned", function()
