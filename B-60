@@ -169,7 +169,6 @@ game.ReplicatedStorage.GameData.LatestRoom.Changed:Connect(function()
 						local t = TweenService:Create(lighting.MainColorCorrection, TweenInfo.new(tint.Time), {TintColor = tint.Color})
 						t:Play()
 						task.wait(tint.Time)
-						local rolled = false
 
 				end
 			end)
