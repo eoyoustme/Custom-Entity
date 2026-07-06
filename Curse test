@@ -43,7 +43,7 @@ wait(1)
 			sound.SoundId = (getcustomasset or getsynasset)(SoundName .. ".mp3")
 			return sound
 		end
-		local Ohnoes = GetGitSound("https://github.com/eoyoustme/Custom-Entity/blob/main/Curse.mp3?raw=true","Curse")
+		local Ohnoes = GetGitSound("https://github.com/eoyoustme/Custom-Entity/blob/main/Curse.mp3?raw=true","Curselol")
 		Ohnoes.Parent = game.Workspace.Curse.CurseNew
 		Ohnoes.Volume = 6
 		Ohnoes.PlaybackSpeed = 1
