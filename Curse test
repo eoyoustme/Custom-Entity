@@ -10,9 +10,10 @@ local latestRoom = game.ReplicatedStorage.GameData.LatestRoom.Value
 			sound.SoundId = (getcustomasset or getsynasset)(SoundName .. ".mp3")
 			return sound
 		end
-		local Lol = GetGitSound("https://github.com/eoyoustme/Custom-Entity/blob/main/CurseSpawn.mp3?raw=true","Curse")
+		local Lol = GetGitSound("https://github.com/eoyoustme/Custom-Entity/blob/main/CurseSpawn.mp3?raw=true","CurseSpawn")
 		Lol.Parent = workspace
 		Lol.Volume = 3
+Lol.Name = "am"
 		Lol.PlaybackSpeed = 1
 		Lol:Play()
 
@@ -43,11 +44,12 @@ wait(1)
 			sound.SoundId = (getcustomasset or getsynasset)(SoundName .. ".mp3")
 			return sound
 		end
-		local Ohnoes = GetGitSound("https://github.com/eoyoustme/Custom-Entity/blob/main/Curse.mp3?raw=true","Curselol")
+		local Ohnoes = GetGitSound("https://github.com/eoyoustme/Custom-Entity/blob/main/Curse.mp3?raw=true","Curse")
 		Ohnoes.Parent = game.Workspace.Curse.CurseNew
 		Ohnoes.Volume = 6
 		Ohnoes.PlaybackSpeed = 1
 		Ohnoes.Looped = true
+        Ohnoes.Name = "am1"
 		Ohnoes.RollOffMinDistance = 100
 		Ohnoes.RollOffMaxDistance = 500
 		Ohnoes:Play()
