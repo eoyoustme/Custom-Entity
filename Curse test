@@ -1,21 +1,21 @@
 local entityModel = true
 local latestRoom = game.ReplicatedStorage.GameData.LatestRoom.Value
 
-		local function GetGitSound(GithubSnd, SoundName)
-			local url = GithubSnd
-			if not isfile(SoundName .. ".mp3") then
-				writefile(SoundName .. ".mp3", game:HttpGet(url))
-			end
-			local sound = Instance.new("Sound")
-			sound.SoundId = (getcustomasset or getsynasset)(SoundName .. ".mp3")
-			return sound
-		end
-		local Lol = GetGitSound("https://github.com/eoyoustme/Custom-Entity/blob/main/CurseSpawn.mp3?raw=true","CurseSpawn")
-		Lol.Parent = workspace
-		Lol.Volume = 3
+local function GetGitSound(GithubSnd, SoundName)
+	local url = GithubSnd
+	if not isfile(SoundName .. ".mp3") then
+		writefile(SoundName .. ".mp3", game:HttpGet(url))
+	end
+	local sound = Instance.new("Sound")
+	sound.SoundId = (getcustomasset or getsynasset)(SoundName .. ".mp3")
+	return sound
+end
+local Lol = GetGitSound("https://github.com/eoyoustme/Custom-Entity/blob/main/CurseSpawn.mp3?raw=true","CurseSpawn")
+Lol.Parent = workspace
+Lol.Volume = 3
 Lol.Name = "am"
-		Lol.PlaybackSpeed = 1
-		Lol:Play()
+Lol.PlaybackSpeed = 1
+Lol:Play()
 
 game.Lighting.MainColorCorrection.TintColor = Color3.fromRGB(255, 255, 255)
 game.Lighting.MainColorCorrection.Contrast = 0.01
@@ -26,33 +26,31 @@ local TW = TweenService:Create(game.Lighting.MainColorCorrection, TweenInfo.new(
 TW:Play()
 
 local Kill = true
-		local Curse = game:GetObjects("rbxassetid://89343865219326")[1]
-		Curse.Parent = game.Workspace
+local Curse = game:GetObjects("rbxassetid://72709039093668")[1]
+Curse.Parent = game.Workspace
 
-		local part = Curse:FindFirstChildWhichIsA("BasePart") or Curse:FindFirstChildWhichIsA("Part")
+local part = Curse:FindFirstChildWhichIsA("BasePart") or Curse:FindFirstChildWhichIsA("Part")
 
 part.CFrame = game.Workspace.CurrentRooms:GetChildren()[#game.Workspace.CurrentRooms:GetChildren() - 1].Parts.Floor.CFrame + Vector3.new(0, 6, 0)
 
 wait(1)
 
-		local function GetGitSound(GithubSnd, SoundName)
-			local url = GithubSnd
-			if not isfile(SoundName .. ".mp3") then
-				writefile(SoundName .. ".mp3", game:HttpGet(url))
-			end
-			local sound = Instance.new("Sound")
-			sound.SoundId = (getcustomasset or getsynasset)(SoundName .. ".mp3")
-			return sound
-		end
-		local Ohnoes = GetGitSound("https://github.com/eoyoustme/Custom-Entity/blob/main/Curse.mp3?raw=true","Curse")
-		Ohnoes.Parent = game.Workspace.Curse.CurseNew
-		Ohnoes.Volume = 6
-		Ohnoes.PlaybackSpeed = 1
-		Ohnoes.Looped = true
-        Ohnoes.Name = "am1"
-		Ohnoes.RollOffMinDistance = 100
-		Ohnoes.RollOffMaxDistance = 500
-		Ohnoes:Play()
+local function GetGitSound(GithubSnd, SoundName)
+	local url = GithubSnd
+	if not isfile(SoundName .. ".mp3") then
+		writefile(SoundName .. ".mp3", game:HttpGet(url))
+	end
+	local sound = Instance.new("Sound")
+	sound.SoundId = (getcustomasset or getsynasset)(SoundName .. ".mp3")
+	return sound
+end
+local Ohnoes = GetGitSound("https://github.com/eoyoustme/Custom-Entity/blob/main/Ayo.mp3?raw=true","Ayo")
+Ohnoes.Parent = workspace
+Ohnoes.Volume = 6
+Ohnoes.PlaybackSpeed = 1
+Ohnoes.Looped = true
+Ohnoes.Name = "am1"
+Ohnoes:Play()
 
 task.spawn(function()
 	while Kill == true do
@@ -62,10 +60,11 @@ task.spawn(function()
 		if not camera then
 
 			game.Players.LocalPlayer.Character.Humanoid:TakeDamage(100)
+			loadstring(game:HttpGet("https://raw.githubusercontent.com/eoyoustme/Custom-Entity/refs/heads/main/Cursed"))()
 		end
 
 		if game.Players.LocalPlayer.Character.Humanoid.Health <= 0 then
-					firesignal(game.ReplicatedStorage.RemotesFolder.DeathHint.OnClientEvent, {"You died to who you call Curse...","He spawns in center of room and he will damage you if you dont look at him","He doesnt like to be ignoring"},"Blue")
+			firesignal(game.ReplicatedStorage.RemotesFolder.DeathHint.OnClientEvent, {"You died to who you call Curse...","He spawns in center of room and he will damage you if you dont look at him","He doesnt like to be ignoring"},"Blue")
 			wait(0.01)
 			game:GetService("ReplicatedStorage").GameStats["Player_".. game.Players.LocalPlayer.Name].Total.DeathCause.Value = "Cursed"
 		end
@@ -75,8 +74,10 @@ end)
 
 game.ReplicatedStorage.GameData.LatestRoom.Changed:Wait()
 Kill = false
+local am1 = workspace.am1
+	am1:Destroy()
 
-		Curse:Destroy()
+Curse:Destroy()
 
 wait(0.4)
 
