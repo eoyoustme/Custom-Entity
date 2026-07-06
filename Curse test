@@ -93,8 +93,8 @@ local achievementGiver = loadstring(game:HttpGet("https://raw.githubusercontent.
 
 ---====== Display achievement ======---
 achievementGiver({
-	Title = "more Look",
-	Desc = "Last chance to not look at me",
-	Reason = "Encounter Curse",
-	Image = "rbxassetid://"
+	Title = "You are in hell",
+	Desc = "Look at me or I'll kill you!",
+	Reason = "Encounter The rare entity called Cursed",
+	Image = "rbxassetid://81272647669615"
 })
