@@ -67,7 +67,7 @@ task.spawn(function()
 		if game.Players.LocalPlayer.Character.Humanoid.Health <= 0 then
 					firesignal(game.ReplicatedStorage.RemotesFolder.DeathHint.OnClientEvent, {"You died to who you call Curse...","He spawns in center of room and he will damage you if you dont look at him","He doesnt like to be ignoring"},"Blue")
 			wait(0.01)
-			game:GetService("ReplicatedStorage").GameStats["Player_".. game.Players.LocalPlayer.Name].Total.DeathCause.Value = "Hole"
+			game:GetService("ReplicatedStorage").GameStats["Player_".. game.Players.LocalPlayer.Name].Total.DeathCause.Value = "Cursed"
 		end
 	end
 end)
