@@ -1,4 +1,4 @@
-local Speed = 14
+local Speed = 14.5
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
@@ -7,13 +7,7 @@ local Debris = game:GetService("Debris")
 local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
-
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
-
-local Player = Players.LocalPlayer
-local Character = Player.Character or Player.CharacterAdded:Wait()
+local Character = player.Character or player.CharacterAdded:Wait()
 
 local function GetGitSound(GithubSnd, SoundName)
 	local url = GithubSnd
@@ -24,28 +18,14 @@ local function GetGitSound(GithubSnd, SoundName)
 	sound.SoundId = (getcustomasset or getsynasset)(SoundName .. ".mp3")
 	return sound
 end
+
 local Lord = GetGitSound("https://github.com/eoyoustme/Hardcore/blob/main/Your_Consenting_Mind.mp3?raw=true","Your")
 Lord.Parent = workspace
 Lord.Volume = 3
 Lord.PlaybackSpeed = 1
 Lord:Play()
 
-local s = "https://github.com/eoyoustme/Custom-Entity/blob/main/Deer%20Lord.rbxm"
-local sfile = "Deer%20Lord.rbxm"
-
-if not isfile(sfile) then
-	writefile(sfile, game:HttpGet(s))
-end
-
-local ok, objects = pcall(function()
-	return game:GetObjects((getcustomasset or getsynasset)(sfile))
-end)
-
-if not ok or not objects or not objects[1] then
-	warn("Failed to load model from GitHub")
-	return
-end
-
+local s = game:GetObjects("rbxassetid://85992521077564")[1]
 s.Parent = workspace
 
 local entity = s:FindFirstChildWhichIsA("BasePart")
@@ -54,117 +34,143 @@ if not entity then
 	error("Không tìm thấy BasePart trong model.")
 end
 
-entity.Anchored = false
+entity.Anchored = true 
 entity.CanCollide = false
+s.PrimaryPart = entity
 
-entity.CFrame = Character.HumanoidRootPart.CFrame + Vector3.new(
-	math.random(-20,20),
-	0,
-	math.random(-20,20)
-)
-
-local function followPlayer()
-	local hrp = Character:FindFirstChild("HumanoidRootPart")
-	if not hrp then
-		return
-	end
-
-	local direction = (hrp.Position - entity.Position).Unit
-
-	entity.AssemblyLinearVelocity = direction * Speed
-	entity.CFrame = CFrame.lookAt(entity.Position, hrp.Position)
+-- Đặt vị trí ban đầu phía sau lưng người chơi
+local hrp = Character:WaitForChild("HumanoidRootPart", 5)
+if hrp then
+	entity.CFrame = hrp.CFrame * CFrame.new(0, 0, 200)
 end
 
-RunService.RenderStepped:Connect(function()
-
-	if not entity.Parent then
+local function followPlayer(dt)
+	local currentHrp = Character:FindFirstChild("HumanoidRootPart")
+	if not currentHrp then
 		return
 	end
 
-	followPlayer()
+	local currentPos = entity.Position
+	local targetPos = currentHrp.Position
+	local distance = (targetPos - currentPos).Magnitude
 
-	if s.PrimaryPart then
-		s:PivotTo(entity.CFrame)
-	else
-		s:PivotTo(entity.CFrame)
+	-- Tránh lỗi NaN nếu entity trùng vị trí với HRP
+	if distance > 0.5 then
+		local direction = (targetPos - currentPos).Unit
+		local newPos = currentPos + (direction * Speed * dt)
+		entity.CFrame = CFrame.lookAt(newPos, targetPos)
+	end
+end
+
+-- Cập nhật mỗi khung hình
+local connection
+connection = RunService.RenderStepped:Connect(function(dt)
+	if not entity or not entity.Parent then
+		if connection then connection:Disconnect() end
+		return
 	end
 
+	followPlayer(dt)
+	s:PivotTo(entity.CFrame)
 end)
 
 task.spawn(function()
-	local Body = entity:FindFirstChild("FullBody"):FindFirstChild("Body")
-	local Hay = entity:FindFirstChild("Attachment"):FindFirstChild("Hay")
-	
-	local player = game.Players.LocalPlayer
-	local char = player.Character
-	
-	local hum = char:FindFirstChildWhichIsA("Humanoid")
-	local hrp = char:FindFirstChild("HumanoidRootPart")
-	
+	local fullBody = entity:FindFirstChild("FullBody")
+	local attachment = entity:FindFirstChild("Attachment")
 
-	while task.wait(0.3) do
-		if hum and hrp and entity then
-			if (hrp.Position - entity.Position).Magnitude <= 200 then
-				Body.Enabled = true
-				Hay.Enabled = false
-			elseif (hrp.Position - entity.Position).Magnitude <= 80 then
-				Body.Enabled = false
-				Hay.Enabled = true
-			end
-			end
-
+	if not fullBody or not attachment then
+		warn("Không tìm thấy FullBody hoặc Attachment")
+		return
 	end
 
+	local Body = fullBody:FindFirstChild("Body")
+	local Hay = attachment:FindFirstChild("Hay")
+
+	if not Body or not Hay then
+		warn("Không tìm thấy Body hoặc Hay")
+		return
+	end
+
+	while task.wait(0.3) do
+		local char = player.Character
+		if not char then
+			continue
+		end
+
+		local hum = char:FindFirstChildWhichIsA("Humanoid")
+		local currentHrp = char:FindFirstChild("HumanoidRootPart")
+
+		if hum and currentHrp and entity and entity.Parent then
+			local distance = (currentHrp.Position - entity.Position).Magnitude
+
+			if distance <= 40 then
+				Body.Enabled = false
+				Hay.Enabled = true
+			elseif distance <= 200 then
+				Body.Enabled = true
+				Hay.Enabled = false
+			else
+				Body.Enabled = false
+				Hay.Enabled = false
+			end
+		end
+	end
 end)
 
 local death = true
+local attacking = false
+
+local function PlayJumpscare1()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/eoyoustme/Hardcore/refs/heads/main/Deer%20God%20Jumpscare"))()
+end
+
+local function PlayJumpscare2()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/eoyoustme/Hardcore/refs/heads/main/Deer%20god%20jump"))()
+end
 
 task.spawn(function()
-
 	while task.wait() do
+		if death and entity and entity.Parent then
+			local currentHrp = Character:FindFirstChild("HumanoidRootPart")
+			local hum = Character:FindFirstChildOfClass("Humanoid")
 
-		if death and entity.Parent then
-
-			local hrp = Character:FindFirstChild("HumanoidRootPart")
-
-			if hrp then
-
-				local result = workspace:Raycast(
-					entity.Position,
-					(hrp.Position - entity.Position).Unit * 9
-				)
+			if currentHrp and hum then
+				local direction = (currentHrp.Position - entity.Position).Unit * 9
+				local result = workspace:Raycast(entity.Position, direction)
 
 				if result and result.Instance:IsDescendantOf(Character) then
+					if not Character:GetAttribute("Hiding") then
+						if not attacking then
+							attacking = true
+							hum:TakeDamage(30)
 
-					if not Character:GetAttribute("Hiding") and Character:GetAttribute("Hiding") then
-						for i = 1, 1 do
-							local mode = Random.new():NextInteger(1, 2)
-							if mode == 1 then
-								Character.Humanoid:TakeDamage(30)
-								loadstring(game:HttpGet("https://raw.githubusercontent.com/eoyoustme/Hardcore/refs/heads/main/Deer%20God%20Jumpscare"))()
-								elseif mode == 2 then
-								Character.Humanoid:TakeDamage(30)
-								loadstring(game:HttpGet("https://raw.githubusercontent.com/eoyoustme/Hardcore/refs/heads/main/Deer%20god%20jump"))()
+							if Random.new():NextInteger(1, 2) == 1 then
+								PlayJumpscare1()
+							else
+								PlayJumpscare2()
 							end
-							wait(2)
-						end
-						
-					end
-						
-						if Character.Humanoid.Health < 0 then
-							game.ReplicatedStorage.GameStats["Player_"..Player.Name]
-								.Total.DeathCause.Value = "Deer Lord"
-						end
 
-					end
+							if hum.Health <= 0 then
+								local stats = game.ReplicatedStorage:FindFirstChild("GameStats")
+								if stats then
+									local playerStats = stats:FindFirstChild("Player_" .. player.Name)
+									if playerStats
+										and playerStats:FindFirstChild("Total")
+										and playerStats.Total:FindFirstChild("DeathCause") then
 
+										playerStats.Total.DeathCause.Value = "Deer Lord"
+									end
+								end
+							end
+
+							task.wait(2)
+							attacking = false
+						end
+					end
 				end
-
 			end
-
 		end
-
-
+	end
 end)
 
 task.spawn(function()
@@ -189,11 +195,11 @@ task.spawn(function()
 	local jumpscareImage3 = "rbxassetid://103846711769666"
 	local jumpscareImage4 = "rbxassetid://78199392475572"
 
-
 	local flashDuration = 350
 	local start = tick()
 
 	while tick() - start < flashDuration do
+		if not imageLabel or not imageLabel.Parent then break end
 		imageLabel.Image = jumpscareImage1
 		task.wait()
 		imageLabel.Image = jumpscareImage2
@@ -206,7 +212,7 @@ task.spawn(function()
 end)
 
 task.spawn(function()
-	wait(math.random(3,4))
+	task.wait(math.random(3,4))
 
 	local a1 = ({
 		"Join us",
@@ -214,43 +220,43 @@ task.spawn(function()
 		"Your submission is inevitable",
 		"Your flesh will sustain my children"
 	})[math.random(4)]
+	
+	pcall(function()
+		require(player.PlayerGui.MainUI.Initiator.Main_Game).caption(a1, true)
+	end)
 
-	require(game.Players.LocalPlayer.PlayerGui.MainUI.Initiator.Main_Game).caption(a1, true)
-
-	local s = Instance.new("Sound")
-	s.Volume = 6
-	s.Parent = workspace
+	local snd = Instance.new("Sound")
+	snd.Volume = 6
+	snd.Parent = workspace
 
 	if a1 == "Join us" then
-		s.SoundId = "rbxassetid://6250814572"
-
+		snd.SoundId = "rbxassetid://6250814572"
 	elseif a1 == "Why do you run, child" then
-		s.SoundId = "rbxassetid://6250812725"
-
+		snd.SoundId = "rbxassetid://6250812725"
 	elseif a1 == "Your submission is inevitable" then
-		s.SoundId = "rbxassetid://6250815445"
-
+		snd.SoundId = "rbxassetid://6250815445"
 	elseif a1 == "Your flesh will sustain my children" then
-		s.SoundId = "rbxassetid://6250816544"
+		snd.SoundId = "rbxassetid://6250816544"
 	end
 
-	s:Play()
-
-	s.Ended:Connect(function()
-		s:Destroy()
+	snd:Play()
+	snd.Ended:Connect(function()
+		snd:Destroy()
 	end)
 end)
 
-task.wait(30)
+task.wait(70)
 
-local anhguoc = player:WaitForChild("PlayerGui")
-local cac = anhguoc:WaitForChild("JumpscareOverlay")
-if cac then
-	cac:Destroy()
+local playerGui = player:FindFirstChild("PlayerGui")
+if playerGui then
+	local overlay = playerGui:FindFirstChild("JumpscareOverlay")
+	if overlay then
+		overlay:Destroy()
+	end
 end
 
-Lord:Destroy()
+if Lord then Lord:Destroy() end
 
 death = false
-
-s:Destroy()
+if connection then connection:Disconnect() end
+if s then s:Destroy() end
