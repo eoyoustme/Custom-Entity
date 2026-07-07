@@ -1,0 +1,256 @@
+local Speed = 18
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local Lighting = game:GetService("Lighting")
+local Debris = game:GetService("Debris")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+
+local Player = Players.LocalPlayer
+local Character = Player.Character or Player.CharacterAdded:Wait()
+
+local function GetGitSound(GithubSnd, SoundName)
+	local url = GithubSnd
+	if not isfile(SoundName .. ".mp3") then
+		writefile(SoundName .. ".mp3", game:HttpGet(url))
+	end
+	local sound = Instance.new("Sound")
+	sound.SoundId = (getcustomasset or getsynasset)(SoundName .. ".mp3")
+	return sound
+end
+local Lord = GetGitSound("https://github.com/eoyoustme/Hardcore/blob/main/Your_Consenting_Mind.mp3?raw=true","Your")
+Lord.Parent = workspace
+Lord.Volume = 3
+Lord.PlaybackSpeed = 1
+Lord:Play()
+
+local s = "https://github.com/eoyoustme/Custom-Entity/blob/main/Deer%20Lord.rbxm"
+local sfile = "Deer%20Lord.rbxm"
+
+if not isfile(sfile) then
+	writefile(sfile, game:HttpGet(s))
+end
+
+local ok, objects = pcall(function()
+	return game:GetObjects((getcustomasset or getsynasset)(sfile))
+end)
+
+if not ok or not objects or not objects[1] then
+	warn("Failed to load model from GitHub")
+	return
+end
+
+s.Parent = workspace
+
+local entity = s:FindFirstChildWhichIsA("BasePart")
+
+if not entity then
+	error("Không tìm thấy BasePart trong model.")
+end
+
+entity.Anchored = false
+entity.CanCollide = false
+
+entity.CFrame = Character.HumanoidRootPart.CFrame + Vector3.new(
+	math.random(-20,20),
+	0,
+	math.random(-20,20)
+)
+
+local function followPlayer()
+	local hrp = Character:FindFirstChild("HumanoidRootPart")
+	if not hrp then
+		return
+	end
+
+	local direction = (hrp.Position - entity.Position).Unit
+
+	entity.AssemblyLinearVelocity = direction * Speed
+	entity.CFrame = CFrame.lookAt(entity.Position, hrp.Position)
+end
+
+RunService.RenderStepped:Connect(function()
+
+	if not entity.Parent then
+		return
+	end
+
+	followPlayer()
+
+	if s.PrimaryPart then
+		s:PivotTo(entity.CFrame)
+	else
+		s:PivotTo(entity.CFrame)
+	end
+
+end)
+
+task.spawn(function()
+	local Body = entity:FindFirstChild("FullBody"):FindFirstChild("Body")
+	local Hay = entity:FindFirstChild("Attachment"):FindFirstChild("Hay")
+	
+	local player = game.Players.LocalPlayer
+	local char = player.Character
+	
+	local hum = char:FindFirstChildWhichIsA("Humanoid")
+	local hrp = char:FindFirstChild("HumanoidRootPart")
+	
+
+	while task.wait(0.3) do
+		if hum and hrp and entity then
+			if (hrp.Position - entity.Position).Magnitude <= 200 then
+				Body.Enabled = true
+				Hay.Enabled = false
+			elseif (hrp.Position - entity.Position).Magnitude <= 80 then
+				Body.Enabled = false
+				Hay.Enabled = true
+			end
+			end
+
+	end
+
+end)
+
+local death = true
+
+task.spawn(function()
+
+	while task.wait() do
+
+		if death and entity.Parent then
+
+			local hrp = Character:FindFirstChild("HumanoidRootPart")
+
+			if hrp then
+
+				local result = workspace:Raycast(
+					entity.Position,
+					(hrp.Position - entity.Position).Unit * 9
+				)
+
+				if result and result.Instance:IsDescendantOf(Character) then
+
+					if not Character:GetAttribute("Hiding") and Character:GetAttribute("Hiding") then
+						for i = 1, 1 do
+							local mode = Random.new():NextInteger(1, 2)
+							if mode == 1 then
+								Character.Humanoid:TakeDamage(30)
+								loadstring(game:HttpGet("https://raw.githubusercontent.com/eoyoustme/Hardcore/refs/heads/main/Deer%20God%20Jumpscare"))()
+								elseif mode == 2 then
+								Character.Humanoid:TakeDamage(30)
+								loadstring(game:HttpGet("https://raw.githubusercontent.com/eoyoustme/Hardcore/refs/heads/main/Deer%20god%20jump"))()
+							end
+							wait(2)
+						end
+						
+					end
+						
+						if Character.Humanoid.Health < 0 then
+							game.ReplicatedStorage.GameStats["Player_"..Player.Name]
+								.Total.DeathCause.Value = "Deer Lord"
+						end
+
+					end
+
+				end
+
+			end
+
+		end
+
+
+end)
+
+task.spawn(function()
+	local screenGui = Instance.new("ScreenGui")
+	screenGui.Name = "JumpscareOverlay"
+	screenGui.IgnoreGuiInset = true
+	screenGui.DisplayOrder = 999999
+	screenGui.Parent = player:WaitForChild("PlayerGui")
+
+	local imageLabel = Instance.new("ImageLabel")
+	imageLabel.BackgroundTransparency = 1
+	imageLabel.BorderSizePixel = 0
+	imageLabel.Position = UDim2.new(0, 0, 0, 0)
+	imageLabel.Size = UDim2.new(1, 0, 1, 0)
+	imageLabel.ScaleType = Enum.ScaleType.Stretch
+	imageLabel.ImageTransparency = 0.85
+	imageLabel.Visible = true
+	imageLabel.Parent = screenGui
+
+	local jumpscareImage1 = "rbxassetid://134346506410955"		
+	local jumpscareImage2 = "rbxassetid://7578853379"
+	local jumpscareImage3 = "rbxassetid://103846711769666"
+	local jumpscareImage4 = "rbxassetid://78199392475572"
+
+
+	local flashDuration = 350
+	local start = tick()
+
+	while tick() - start < flashDuration do
+		imageLabel.Image = jumpscareImage1
+		task.wait()
+		imageLabel.Image = jumpscareImage2
+		task.wait()
+		imageLabel.Image = jumpscareImage3
+		task.wait()
+		imageLabel.Image = jumpscareImage4
+		task.wait()
+	end
+end)
+
+task.spawn(function()
+	wait(math.random(3,4))
+
+	local a1 = ({
+		"Join us",
+		"Why do you run, child",
+		"Your submission is inevitable",
+		"Your flesh will sustain my children"
+	})[math.random(4)]
+
+	require(game.Players.LocalPlayer.PlayerGui.MainUI.Initiator.Main_Game).caption(a1, true)
+
+	local s = Instance.new("Sound")
+	s.Volume = 6
+	s.Parent = workspace
+
+	if a1 == "Join us" then
+		s.SoundId = "rbxassetid://6250814572"
+
+	elseif a1 == "Why do you run, child" then
+		s.SoundId = "rbxassetid://6250812725"
+
+	elseif a1 == "Your submission is inevitable" then
+		s.SoundId = "rbxassetid://6250815445"
+
+	elseif a1 == "Your flesh will sustain my children" then
+		s.SoundId = "rbxassetid://6250816544"
+	end
+
+	s:Play()
+
+	s.Ended:Connect(function()
+		s:Destroy()
+	end)
+end)
+
+task.wait(30)
+
+local anhguoc = player:WaitForChild("PlayerGui")
+local cac = anhguoc:WaitForChild("JumpscareOverlay")
+if cac then
+	cac:Destroy()
+end
+
+Lord:Destroy()
+
+death = false
+
+s:Destroy()
