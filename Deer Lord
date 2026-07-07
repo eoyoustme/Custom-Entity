@@ -1,4 +1,4 @@
-local Speed = 12.5
+local Speed = 10
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
@@ -135,7 +135,7 @@ task.spawn(function()
 			local hum = Character:FindFirstChildOfClass("Humanoid")
 
 			if currentHrp and hum then
-				local direction = (currentHrp.Position - entity.Position).Unit * 9
+				local direction = (currentHrp.Position - entity.Position).Unit * 5
 				local result = workspace:Raycast(entity.Position, direction)
 
 				if result and result.Instance:IsDescendantOf(Character) then
@@ -201,13 +201,13 @@ task.spawn(function()
 	while tick() - start < flashDuration do
 		if not imageLabel or not imageLabel.Parent then break end
 		imageLabel.Image = jumpscareImage1
-		task.wait()
+		task.wait(0.0689)
 		imageLabel.Image = jumpscareImage2
-		task.wait()
+		task.wait(0.0689)
 		imageLabel.Image = jumpscareImage3
-		task.wait()
+		task.wait(0.0689)
 		imageLabel.Image = jumpscareImage4
-		task.wait()
+		task.wait(0.0689)
 	end
 end)
 
