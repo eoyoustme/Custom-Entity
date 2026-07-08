@@ -107,7 +107,7 @@ if currentRoom and currentRoom ~= latestRoom and config and config:FindFirstChil
 end
 
 -- Hiển thị chữ yêu cầu người chơi ngồi xuống
-Modules.Main_Game.caption("CrOuCh DoWn", true)
+Modules.Main_Game.caption("C͕̻̅ͨ̕ŖǪ̪̲ͪ͗Ų̛̬̎́_̤̔͌̕͞Č͎̮̉͝Ḫ͙ͩ́ DOW̋N̠̺̼͂̚", true)
 
 -- Quản lý trạng thái vòng lặp giết người
 local Kill = true
