@@ -1,95 +1,154 @@
 local Camera = workspace.CurrentCamera
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-
-
-function GetRoom()
-	local gruh = workspace.CurrentRooms
-	return gruh:FindFirstChild(game.ReplicatedStorage.GameData.LatestRoom.Value)
-end
-
-local CurrentRooms = workspace:WaitForChild("CurrentRooms") :: Folder
-
 local Players = game:GetService("Players")
+
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local CurrentRooms = workspace:WaitForChild("CurrentRooms") :: Folder
 
+-- Các Module điều khiển
 local Modules = {
 	Module_Events = require(ReplicatedStorage.ModulesClient.Module_Events :: ModuleScript),
 	Main_Game = require(PlayerGui.MainUI.Initiator.Main_Game :: ModuleScript)
 }
 
+-- Hàm lấy phòng hiện tại dựa trên GameData
+local function GetRoom()
+	local gruh = workspace:FindFirstChild("CurrentRooms")
+	local gameData = ReplicatedStorage:FindFirstChild("GameData")
+	local latestRoom = gameData and gameData:FindFirstChild("LatestRoom")
+	
+	if gruh and latestRoom then
+		return gruh:FindFirstChild(tostring(latestRoom.Value))
+	end
+	return nil
+end
+
+-- Hàm lấy phòng mới nhất hoặc phòng hiện tại theo Attribute
+local function GetCurrentRoom(latest: boolean): Model?
+	if latest then
+		local rooms = CurrentRooms:GetChildren()
+		return rooms[#rooms]
+	end
+	local roomAttr = LocalPlayer:GetAttribute("CurrentRoom")
+	return roomAttr and CurrentRooms:FindFirstChild(roomAttr) or nil
+end
+
+-- Hàm sửa đèn trong phòng
 local function FixRoomLights(room: Model)
 	local roomEntrance = room:FindFirstChild("RoomEntrance")
 	if not roomEntrance then return end
 
-	-- Clear shards
+	-- Xóa các mảnh vỡ kính cũ trong Camera
 	for _, c in next, Camera:GetChildren() do
 		if c.Name == "Piece" then
 			c:Destroy()
 		end
 	end
+end -- <- SỬA LỖI 1: Đã thêm 'end' để đóng hàm FixRoomLights một cách hợp lệ
 
+-- Tải và khởi tạo Entity (Sử dụng pcall an toàn cho Executor/Plugin)
+local success, assets = pcall(function()
+	return game:GetObjects("rbxassetid://133375815714221")
+end)
 
-local function GetCurrentRoom(latest: boolean): Model?
-	if latest then
-		return CurrentRooms:GetChildren()[#CurrentRooms:GetChildren()]
-	end
-	return CurrentRooms:FindFirstChild(LocalPlayer:GetAttribute("CurrentRoom"))
+if not success or not assets or #assets == 0 then
+	warn("⚠️ Không thể tải được Asset Entity! Kiểm tra lại ID hoặc quyền hạn Script.")
+	return
 end
 
-local s = game:GetObjects("rbxassetid://14315263201")[1]
+local s = assets[1]
 s.Parent = workspace
 
-
-
 local entity = s:FindFirstChildWhichIsA("BasePart")
-entity.Parent = s
-entity.CFrame = GetRoom():WaitForChild("RoomEntrance").CFrame * CFrame.new(0,6,-35)
+if not entity then
+	warn("⚠️ Không tìm thấy BasePart nào bên trong Asset để làm Entity!")
+	return
+end
 
-	local config = entity.Config
+-- Kiểm tra phòng hợp lệ trước khi dịch chuyển
+local currentRoom = GetRoom()
+if currentRoom then
+	local entrance = currentRoom:WaitForChild("RoomEntrance", 5)
+	if entrance then
+		entity.CFrame = entrance.CFrame * CFrame.new(0, 3, -25)
+	end
+else
+	warn("⚠️ Không tìm thấy phòng hiện tại để dịch chuyển Entity.")
+end
 
-
-
+-- Xử lý hiệu ứng đèn giật/nổ dựa theo cấu hình Config của Entity
+local config = entity:FindFirstChild("Config")
 local latestRoom = GetCurrentRoom(true)
-if room ~= latestRoom then
-	if config.Lights.Shatter then
-		Modules.Module_Events.shatter(room)
-	elseif config.Lights.Repair then
-		FixRoomLights(room)
+
+if currentRoom and currentRoom ~= latestRoom and config and config:FindFirstChild("Lights") then
+	if config.Lights:FindFirstChild("Shatter") and config.Lights.Shatter.Value then
+		Modules.Module_Events.shatter(currentRoom)
+	elseif config.Lights:FindFirstChild("Repair") and config.Lights.Repair.Value then
+		FixRoomLights(currentRoom)
 	end
 end
 
-require(game.Players.LocalPlayer.PlayerGui.MainUI.Initiator.Main_Game).caption("CrOuCh DoWn", true)
+-- Hiển thị chữ yêu cầu người chơi ngồi xuống
+Modules.Main_Game.caption("CrOuCh DoWn", true)
 
+-- Quản lý trạng thái vòng lặp giết người
 local Kill = true
 
 task.wait(1)
 task.spawn(function()
-
-	while true do
+	-- Vòng lặp kiểm tra trạng thái ngồi (Crouching) của người chơi
+	while Kill do
 		task.wait(0.15)
 
-		local player = game.Players.LocalPlayer
-		local char = player.Character
+		local char = LocalPlayer.Character
 		local hum = char and char:FindFirstChildOfClass("Humanoid")
-		local hrp = char and char:FindFirstChild("HumanoidRootPart")
 
-		if not game.Players.LocalPlayer.Character:GetAttribute("Crouching") and Kill.Value == true then
-			game.Players.LocalPlayer.Character.Humanoid.Health -= 100
-			local sound = Instance.new("Sound")
-			sound.SoundId = "rbxassetid://4988621968"
-			sound.Volume = 10
-			sound.PlaybackSpeed = 0.7
-			sound.Parent = workspace
-			sound:Play()
-			game:GetService("ReplicatedStorage").GameStats["Player_".. game.Players.LocalPlayer.Name].Total.DeathCause.Value = "NightmareSilence"
+		if char and hum and hum.Health > 0 then
+			-- SỬA LỖI 2: Đã đổi 'Kill.Value == true' thành check biến Boolean 'Kill' thuần túy
+			local isCrouching = char:GetAttribute("Crouching")
+			
+			if not isCrouching and Kill then
+				-- Phạt: Giết ngay lập tức nếu đứng lên
+				hum.Health = 0
+				
+				-- Tạo âm thanh tiếng động lúc phạt
+				local sound = Instance.new("Sound")
+				sound.SoundId = "rbxassetid://4988621968"
+				sound.Volume = 10
+				sound.PlaybackSpeed = 0.7
+				sound.Parent = workspace
+				sound:Play()
+				game:GetService("Debris"):AddItem(sound, 5) -- Tự động xóa sound sau khi phát xong tránh rác bộ nhớ
+				
+				-- Cập nhật nguyên nhân chết vào GameStats
+				local gameStats = ReplicatedStorage:FindFirstChild("GameStats")
+				local pStats = gameStats and gameStats:FindFirstChild("Player_" .. LocalPlayer.Name)
+				if pStats and pStats:FindFirstChild("Total") and pStats.Total:FindFirstChild("DeathCause") then
+					pStats.Total.DeathCause.Value = "NightmareSilence"
+				end
+				
+				break -- Thoát vòng lặp khi người chơi đã chết
+			end
 		end
 	end
 end)
 
-game.Workspace.CurrentRooms.ChildAdded:Connect(function()
-	s:Destroy()
-	Kill = false
+-- Sự kiện khi người chơi mở sang phòng mới (Hủy thực thể cũ)
+CurrentRooms.ChildAdded:Connect(function()
+	Kill = false -- Dừng vòng lặp check Crouch lập tức để không bị chết oan ở phòng mới
+	if s then
+		s:Destroy()
+
+		---====== Load achievement giver ======---
+		local achievementGiver = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Doors/Custom%20Achievements/Source.lua"))()
+
+		---====== Display achievement ======---
+		achievementGiver({
+			Title = "I stay quiet but don't make a noise",
+			Desc = "Make silence",
+			Reason = "Encounter Nightmare Silence",
+			Image = "rbxassetid://126753727339439"
+		})
+	end
 end)
-end
