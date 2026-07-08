@@ -17,7 +17,7 @@ local function GetRoom()
 	local gruh = workspace:FindFirstChild("CurrentRooms")
 	local gameData = ReplicatedStorage:FindFirstChild("GameData")
 	local latestRoom = gameData and gameData:FindFirstChild("LatestRoom")
-	
+
 	if gruh and latestRoom then
 		return gruh:FindFirstChild(tostring(latestRoom.Value))
 	end
@@ -66,6 +66,23 @@ if not entity then
 	return
 end
 
+local point = Instance.new("PointLight")
+point.Parent = entity
+point.Color = Color3.fromRGB(255,0,0)
+point.Range = 20
+point.Brightness = 10
+
+
+local Sound = Instance.new("Sound")
+Sound.Parent = entity
+Sound.SoundId = "rbxassetid://9113731969"
+Sound.Volume = 5
+Sound.PlaybackSpeed = 2.5
+Sound.RollOffMinDistance = 100
+Sound.RollOffMaxDistance = 200
+Sound:Play()
+
+
 -- Kiểm tra phòng hợp lệ trước khi dịch chuyển
 local currentRoom = GetRoom()
 if currentRoom then
@@ -99,7 +116,7 @@ task.wait(1)
 task.spawn(function()
 	-- Vòng lặp kiểm tra trạng thái ngồi (Crouching) của người chơi
 	while Kill do
-		task.wait(0.15)
+		task.wait(1)
 
 		local char = LocalPlayer.Character
 		local hum = char and char:FindFirstChildOfClass("Humanoid")
@@ -107,11 +124,11 @@ task.spawn(function()
 		if char and hum and hum.Health > 0 then
 			-- SỬA LỖI 2: Đã đổi 'Kill.Value == true' thành check biến Boolean 'Kill' thuần túy
 			local isCrouching = char:GetAttribute("Crouching")
-			
+
 			if not isCrouching and Kill then
 				-- Phạt: Giết ngay lập tức nếu đứng lên
 				hum.Health = 0
-				
+
 				-- Tạo âm thanh tiếng động lúc phạt
 				local sound = Instance.new("Sound")
 				sound.SoundId = "rbxassetid://4988621968"
@@ -120,14 +137,14 @@ task.spawn(function()
 				sound.Parent = workspace
 				sound:Play()
 				game:GetService("Debris"):AddItem(sound, 5) -- Tự động xóa sound sau khi phát xong tránh rác bộ nhớ
-				
+
 				-- Cập nhật nguyên nhân chết vào GameStats
 				local gameStats = ReplicatedStorage:FindFirstChild("GameStats")
 				local pStats = gameStats and gameStats:FindFirstChild("Player_" .. LocalPlayer.Name)
 				if pStats and pStats:FindFirstChild("Total") and pStats.Total:FindFirstChild("DeathCause") then
 					pStats.Total.DeathCause.Value = "NightmareSilence"
 				end
-				
+
 				break -- Thoát vòng lặp khi người chơi đã chết
 			end
 		end
