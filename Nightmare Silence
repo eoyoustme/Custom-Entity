@@ -152,7 +152,7 @@ task.spawn(function()
 end)
 
 -- Sự kiện khi người chơi mở sang phòng mới (Hủy thực thể cũ)
-CurrentRooms.ChildAdded:Connect(function()
+game.ReplicatedStorage.GameData.LatestRoom.Changed:Wait()
 	Kill = false -- Dừng vòng lặp check Crouch lập tức để không bị chết oan ở phòng mới
 	if s then
 		s:Destroy()
