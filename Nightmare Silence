@@ -1,0 +1,95 @@
+local Camera = workspace.CurrentCamera
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+
+
+function GetRoom()
+	local gruh = workspace.CurrentRooms
+	return gruh:FindFirstChild(game.ReplicatedStorage.GameData.LatestRoom.Value)
+end
+
+local CurrentRooms = workspace:WaitForChild("CurrentRooms") :: Folder
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+local Modules = {
+	Module_Events = require(ReplicatedStorage.ModulesClient.Module_Events :: ModuleScript),
+	Main_Game = require(PlayerGui.MainUI.Initiator.Main_Game :: ModuleScript)
+}
+
+local function FixRoomLights(room: Model)
+	local roomEntrance = room:FindFirstChild("RoomEntrance")
+	if not roomEntrance then return end
+
+	-- Clear shards
+	for _, c in next, Camera:GetChildren() do
+		if c.Name == "Piece" then
+			c:Destroy()
+		end
+	end
+
+
+local function GetCurrentRoom(latest: boolean): Model?
+	if latest then
+		return CurrentRooms:GetChildren()[#CurrentRooms:GetChildren()]
+	end
+	return CurrentRooms:FindFirstChild(LocalPlayer:GetAttribute("CurrentRoom"))
+end
+
+local s = game:GetObjects("rbxassetid://14315263201")[1]
+s.Parent = workspace
+
+
+
+local entity = s:FindFirstChildWhichIsA("BasePart")
+entity.Parent = s
+entity.CFrame = GetRoom():WaitForChild("RoomEntrance").CFrame * CFrame.new(0,6,-35)
+
+	local config = entity.Config
+
+
+
+local latestRoom = GetCurrentRoom(true)
+if room ~= latestRoom then
+	if config.Lights.Shatter then
+		Modules.Module_Events.shatter(room)
+	elseif config.Lights.Repair then
+		FixRoomLights(room)
+	end
+end
+
+require(game.Players.LocalPlayer.PlayerGui.MainUI.Initiator.Main_Game).caption("CrOuCh DoWn", true)
+
+local Kill = true
+
+task.wait(1)
+task.spawn(function()
+
+	while true do
+		task.wait(0.15)
+
+		local player = game.Players.LocalPlayer
+		local char = player.Character
+		local hum = char and char:FindFirstChildOfClass("Humanoid")
+		local hrp = char and char:FindFirstChild("HumanoidRootPart")
+
+		if not game.Players.LocalPlayer.Character:GetAttribute("Crouching") and Kill.Value == true then
+			game.Players.LocalPlayer.Character.Humanoid.Health -= 100
+			local sound = Instance.new("Sound")
+			sound.SoundId = "rbxassetid://4988621968"
+			sound.Volume = 10
+			sound.PlaybackSpeed = 0.7
+			sound.Parent = workspace
+			sound:Play()
+			game:GetService("ReplicatedStorage").GameStats["Player_".. game.Players.LocalPlayer.Name].Total.DeathCause.Value = "NightmareSilence"
+		end
+	end
+end)
+
+game.Workspace.CurrentRooms.ChildAdded:Connect(function()
+	s:Destroy()
+	Kill = false
+end)
+end
