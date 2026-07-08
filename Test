@@ -133,7 +133,7 @@ if hum and hrp then
 						p.CanCollide = false
 						TweenService:Create(
 							p, 
-							TweenInfo.new(1.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), 
+							TweenInfo.new(1.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
 							{CFrame = targetCFrame}
 						):Play()
 					end
@@ -143,19 +143,21 @@ if hum and hrp then
 				target.instance.CanCollide = false
 				TweenService:Create(
 					target.instance, 
-					TweenInfo.new(1.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), 
+					TweenInfo.new(1.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
 					{CFrame = targetCFrame}
 				):Play()
 			end
 		end
 
-		task.delay(1.2, function()
+		task.delay(0.9, function()
 			for _, inst in ipairs(instancesToDestroy) do
 				if inst and inst.Parent then
 					inst:Destroy()
 				end
 			end
 		end)
+
+wait(0.9)
 
 		local chain = Instance.new("ColorCorrectionEffect", game.Lighting) 
 		game.Debris:AddItem(chain, 24)
