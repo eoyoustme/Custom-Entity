@@ -107,7 +107,7 @@ if currentRoom and currentRoom ~= latestRoom and config and config:FindFirstChil
 end
 
 -- Hiển thị chữ yêu cầu người chơi ngồi xuống
-Modules.Main_Game.caption("CrouXh DoWn", true)
+Modules.Main_Game.caption("C͕̻̅ͨ̕ŖǪ̪̲ͪ͗Ų̛̬̎́_̤̔͌̕͞Č͎̮̉͝Ḫ͙ͩ́ DOW̋N̠̺̼͂̚", true)
 
 -- Quản lý trạng thái vòng lặp giết người
 local Kill = true
@@ -153,19 +153,18 @@ end)
 
 -- Sự kiện khi người chơi mở sang phòng mới (Hủy thực thể cũ)
 game.ReplicatedStorage.GameData.LatestRoom.Changed:Wait()
-	Kill = false -- Dừng vòng lặp check Crouch lập tức để không bị chết oan ở phòng mới
-	if s then
-		s:Destroy()
+Kill = false -- Dừng vòng lặp check Crouch lập tức để không bị chết oan ở phòng mới
+if s then
+	s:Destroy()
 
-		---====== Load achievement giver ======---
-		local achievementGiver = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Doors/Custom%20Achievements/Source.lua"))()
+	---====== Load achievement giver ======---
+	local achievementGiver = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Doors/Custom%20Achievements/Source.lua"))()
 
-		---====== Display achievement ======---
-		achievementGiver({
-			Title = "I stay quiet but don't make a noise",
-			Desc = "Make silence",
-			Reason = "Encounter Nightmare Silence",
-			Image = "rbxassetid://126753727339439"
-		})
-	end
-end)
+	---====== Display achievement ======---
+	achievementGiver({
+		Title = "I stay quiet but don't make a noise",
+		Desc = "Make silence",
+		Reason = "Encounter Nightmare Silence",
+		Image = "rbxassetid://126753727339439"
+	})
+end
